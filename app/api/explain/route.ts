@@ -33,7 +33,6 @@ Question: ${question}`;
     const stream = await ai.models.generateContentStream({
       model: "gemma-4-26b-a4b-it",
       contents: prompt,
-      config: { maxOutputTokens: 300, temperature: 0.4 },
     });
 
     const encoder = new TextEncoder();
@@ -43,7 +42,8 @@ Question: ${question}`;
           for await (const chunk of stream) {
             if (chunk.text) controller.enqueue(encoder.encode(chunk.text));
           }
-        } catch {
+        } catch (err) {
+          console.error("Gemma stream error:", err);
           controller.enqueue(encoder.encode("\n\n(Gemma stopped early. Try again.)"));
         }
         controller.close();
@@ -53,7 +53,8 @@ Question: ${question}`;
     return new Response(body, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
-  } catch {
+  } catch (err) {
+    console.error("Gemma error:", err);
     return Response.json(
       { error: "Gemma couldn't answer right now. Try again in a moment." },
       { status: 500 }
