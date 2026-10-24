@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cedi Converter
 
-## Getting Started
+A small web app that converts Ghana cedis (GH₵) to other currencies using a live exchange rate, with a box where you can ask Gemma 4 what the amount could buy.
 
-First, run the development server:
+Built at the KNUST Hacktoberfest Hack Day (MLH x WikiTech) 2026.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Why I built it
+It was a fun idea I wanted to bring to life.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What it does
+- Converts GH₵ to USD, GBP, EUR, NGN, CAD and CNY using live rates from open.er-api.com
+- "Ask Gemma 4" panel with quick questions and a free-text box
+- Gemma's answer streams in as it is generated
+- If Gemma is slow or fails, the app retries and falls back to the larger Gemma 4 model
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Built with
+Next.js, TypeScript, React, Tailwind CSS, Gemma 4 (gemma-4-26b-a4b-it and gemma-4-31b-it) through the Gemini API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Run it yourself
+1. Clone the repo and run `npm install`
+2. Get a free API key at aistudio.google.com
+3. Create a `.env.local` file with `GEMINI_API_KEY=your-key`
+4. Run `npm run dev` and open http://localhost:3000
 
-## Learn More
+## Known limits
+Gemma answers can be slow or fail when the API is busy. Answers are rough estimates, not financial advice.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## What I learned
+This was my first hackathon. 
+I learned how to call an AI model from a Next.js server route so the API key stays private, and how to stream the answer back to the page. I also learned that outside APIs can be slow or fail, so the app needs timeouts, retries and a clear error message. Splitting the code into small components and a hook made it much easier to change.
