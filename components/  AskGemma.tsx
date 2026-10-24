@@ -33,8 +33,24 @@ export default function AskGemma({ cedis, target, converted }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: q, cedis, target, converted }),
       });
-      const data = await res.json();
-      setAnswer(data.answer || data.error || "No answer came back.");
+
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        setAnswer(data.error || "No answer came back.");
+        setLoading(false);
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let text = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true });
+        setAnswer(text);
+      }
     } catch {
       setAnswer("Something went wrong. Check your connection.");
     }
@@ -84,9 +100,11 @@ export default function AskGemma({ cedis, target, converted }: Props) {
       </div>
 
       <div className="mt-4 min-h-28 flex-1 overflow-y-auto lg:max-h-64">
-        {loading && <p className="text-sm text-stone-500">Waiting for Gemma...</p>}
+        {loading && !answer && (
+          <p className="text-sm text-stone-500">Waiting for Gemma...</p>
+        )}
 
-        {!loading && answer && (
+        {answer && (
           <p className="whitespace-pre-wrap border-l-2 border-stone-900 pl-3 text-sm leading-relaxed">
             {answer}
           </p>
