@@ -8,14 +8,13 @@ type Props = {
 export default function AmountInput({ value, onChange }: Props) {
   return (
     <div>
-      <label
-        htmlFor="amount"
-        className="mb-2 block text-sm font-semibold text-neutral-700"
-      >
-        Amount
+      <label htmlFor="amount" className="mb-1.5 block text-sm font-medium">
+        Amount in cedis
       </label>
-      <div className="flex items-center rounded-2xl border border-stone-300 bg-white focus-within:border-green-700 focus-within:ring-4 focus-within:ring-green-700/15">
-        <span className="pl-4 text-lg font-semibold text-neutral-500">GH₵</span>
+      <div className="flex items-baseline gap-2 border-b-2 border-stone-300 focus-within:border-stone-900">
+        <span className="font-[family-name:var(--font-mono)] text-lg text-stone-500">
+          GH₵
+        </span>
         <input
           id="amount"
           type="number"
@@ -23,8 +22,8 @@ export default function AmountInput({ value, onChange }: Props) {
           min="0"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="0.00"
-          className="w-full bg-transparent px-3 py-4 text-2xl font-semibold text-neutral-900 outline-none placeholder:text-neutral-300"
+          placeholder="0"
+          className="w-full bg-transparent py-2 font-[family-name:var(--font-mono)] text-3xl outline-none placeholder:text-stone-300"
         />
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -33,7 +32,7 @@ export default function AmountInput({ value, onChange }: Props) {
             key={amount}
             type="button"
             onClick={() => onChange(String(amount))}
-            className="rounded-full bg-stone-100 px-3 py-1.5 text-sm font-medium text-neutral-700 transition hover:bg-stone-200"
+            className="rounded-md border border-stone-300 px-2.5 py-1 font-[family-name:var(--font-mono)] text-sm hover:border-stone-900"
           >
             {amount.toLocaleString()}
           </button>

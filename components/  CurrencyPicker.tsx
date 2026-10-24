@@ -8,9 +8,7 @@ type Props = {
 export default function CurrencyPicker({ value, onChange }: Props) {
   return (
     <div className="mt-6">
-      <span className="mb-2 block text-sm font-semibold text-neutral-700">
-        Convert to
-      </span>
+      <span className="mb-1.5 block text-sm font-medium">Convert to</span>
       <div className="flex flex-wrap gap-2">
         {CURRENCIES.map((c) => {
           const active = c.code === value;
@@ -21,13 +19,12 @@ export default function CurrencyPicker({ value, onChange }: Props) {
               onClick={() => onChange(c.code)}
               aria-pressed={active}
               title={c.name}
-              className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-semibold transition ${
+              className={`rounded-md border px-3 py-1.5 font-[family-name:var(--font-mono)] text-sm ${
                 active
-                  ? "border-green-800 bg-green-800 text-white shadow-sm"
-                  : "border-stone-300 bg-white text-neutral-700 hover:border-green-700"
+                  ? "border-stone-900 bg-stone-900 text-white"
+                  : "border-stone-300 hover:border-stone-900"
               }`}
             >
-              <span aria-hidden>{c.flag}</span>
               {c.code}
             </button>
           );

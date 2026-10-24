@@ -3,19 +3,13 @@ import ConverterCard from "@/components/ ConverterCard";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#faf7f0] text-neutral-900">
-      <div className="flex h-1.5">
-        <div className="flex-1 bg-red-600" />
-        <div className="flex-1 bg-yellow-400" />
-        <div className="flex-1 bg-green-700" />
-      </div>
-
-      <main className="mx-auto max-w-5xl px-4 py-6 lg:py-8">
+    <div className="min-h-screen bg-[#f6f5f1] text-stone-900">
+      <main className="mx-auto max-w-4xl px-4 py-8 lg:py-12">
         <Header />
         <ConverterCard />
-        <footer className="mt-5 text-center text-xs text-neutral-500">
-          Powered by Gemma 4 via the Gemini API and live exchange rates.
-          AI answers are rough estimates.
+        <footer className="mt-6 text-xs text-stone-500">
+          Exchange rates come from open.er-api.com. Gemma&apos;s answers are
+          rough estimates, not financial advice.
         </footer>
       </main>
     </div>

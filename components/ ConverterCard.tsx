@@ -20,8 +20,8 @@ export default function ConverterCard() {
     perCedi !== null && amount > 0 ? formatMoney(amount * perCedi, target) : null;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-2 lg:items-stretch">
-      <section className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-black/5">
+    <div className="grid gap-4 lg:grid-cols-2">
+      <section className="rounded-lg border border-stone-300 bg-white p-6">
         <AmountInput value={cedis} onChange={setCedis} />
         <CurrencyPicker value={target} onChange={setTarget} />
         <ResultCard

@@ -43,68 +43,60 @@ export default function AskGemma({ cedis, target, converted }: Props) {
   }
 
   return (
-    <section className="flex flex-col rounded-3xl bg-white p-6 shadow-xl ring-1 ring-black/5">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-bold">Ask Gemma 4</h2>
-        <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-neutral-600">
-          Open-weight AI
-        </span>
-      </div>
+    <section className="flex flex-col rounded-lg border border-stone-300 bg-white p-6">
+      <h2 className="text-sm font-medium">Ask Gemma 4</h2>
+      <p className="mt-1 text-sm text-stone-600">
+        Ask what this amount could pay for.
+      </p>
 
-      <div className="mb-3 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         {QUICK_QUESTIONS.map((q) => (
           <button
             key={q}
             type="button"
             disabled={loading || disabled}
             onClick={() => ask(q)}
-            className="rounded-full border border-green-800 px-3 py-1.5 text-xs font-medium text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-stone-300 px-2.5 py-1 text-sm hover:border-stone-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-stone-300"
           >
             {q}
           </button>
         ))}
       </div>
 
-      <div className="flex gap-2">
+      <div className="mt-3 flex gap-2">
         <input
           value={question}
           maxLength={200}
           disabled={disabled}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && ask(question)}
-          placeholder={disabled ? "Enter an amount first..." : "Or type your own question..."}
-          className="min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-neutral-900 outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/15 disabled:bg-stone-50"
+          placeholder={disabled ? "Enter an amount first" : "Type your own question"}
+          className="min-w-0 flex-1 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm outline-none focus:border-stone-900 disabled:bg-stone-50"
         />
         <button
           type="button"
           disabled={loading || disabled || !question.trim()}
           onClick={() => ask(question)}
-          className="rounded-xl bg-green-800 px-5 py-2.5 font-semibold text-white transition hover:bg-green-900 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-md bg-green-900 px-4 py-2 text-sm font-medium text-white hover:bg-green-950 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {loading ? "Thinking..." : "Ask"}
+          {loading ? "Asking..." : "Ask"}
         </button>
       </div>
 
-      <div className="mt-4 min-h-32 flex-1 overflow-y-auto lg:max-h-64">
-        {loading && (
-          <div className="space-y-2" aria-label="Gemma is thinking">
-            <div className="h-3 w-full animate-pulse rounded bg-stone-200" />
-            <div className="h-3 w-5/6 animate-pulse rounded bg-stone-200" />
-            <div className="h-3 w-2/3 animate-pulse rounded bg-stone-200" />
-          </div>
-        )}
+      <div className="mt-4 min-h-28 flex-1 overflow-y-auto lg:max-h-64">
+        {loading && <p className="text-sm text-stone-500">Waiting for Gemma...</p>}
 
         {!loading && answer && (
-          <div className="whitespace-pre-wrap rounded-2xl bg-amber-50 p-4 leading-relaxed text-neutral-800 ring-1 ring-amber-200">
+          <p className="whitespace-pre-wrap border-l-2 border-stone-900 pl-3 text-sm leading-relaxed">
             {answer}
-          </div>
+          </p>
         )}
 
         {!loading && !answer && (
-          <p className="rounded-2xl border border-dashed border-stone-300 p-4 text-sm text-neutral-500">
+          <p className="text-sm text-stone-500">
             {disabled
-              ? "Convert an amount on the left, then ask Gemma what it means."
-              : "Pick a question above or type your own."}
+              ? "Enter an amount on the left first."
+              : "Pick a question or type your own."}
           </p>
         )}
       </div>
