@@ -20,20 +20,21 @@ export default function ConverterCard() {
     perCedi !== null && amount > 0 ? formatMoney(amount * perCedi, target) : null;
 
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-black/5 sm:p-8">
-      <AmountInput value={cedis} onChange={setCedis} />
-      <CurrencyPicker value={target} onChange={setTarget} />
-      <ResultCard
-        converted={converted}
-        perCedi={perCedi}
-        target={target}
-        loading={loading}
-        error={error}
-        onRetry={retry}
-      />
-      {converted && (
-        <AskGemma cedis={cedis} target={target} converted={converted} />
-      )}
+    <div className="grid gap-5 lg:grid-cols-2 lg:items-stretch">
+      <section className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-black/5">
+        <AmountInput value={cedis} onChange={setCedis} />
+        <CurrencyPicker value={target} onChange={setTarget} />
+        <ResultCard
+          converted={converted}
+          perCedi={perCedi}
+          target={target}
+          loading={loading}
+          error={error}
+          onRetry={retry}
+        />
+      </section>
+
+      <AskGemma cedis={cedis} target={target} converted={converted} />
     </div>
   );
 }

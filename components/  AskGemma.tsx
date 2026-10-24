@@ -11,7 +11,7 @@ const QUICK_QUESTIONS = [
 type Props = {
   cedis: string;
   target: string;
-  converted: string;
+  converted: string | null;
 };
 
 export default function AskGemma({ cedis, target, converted }: Props) {
@@ -19,8 +19,10 @@ export default function AskGemma({ cedis, target, converted }: Props) {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const disabled = !converted;
+
   async function ask(q: string) {
-    if (!q.trim() || loading) return;
+    if (!q.trim() || loading || !converted) return;
     setQuestion(q);
     setLoading(true);
     setAnswer("");
@@ -41,7 +43,7 @@ export default function AskGemma({ cedis, target, converted }: Props) {
   }
 
   return (
-    <section className="mt-8 border-t border-stone-200 pt-6">
+    <section className="flex flex-col rounded-3xl bg-white p-6 shadow-xl ring-1 ring-black/5">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-bold">Ask Gemma 4</h2>
         <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-neutral-600">
@@ -54,9 +56,9 @@ export default function AskGemma({ cedis, target, converted }: Props) {
           <button
             key={q}
             type="button"
-            disabled={loading}
+            disabled={loading || disabled}
             onClick={() => ask(q)}
-            className="rounded-full border border-green-800 px-3 py-1.5 text-xs font-medium text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full border border-green-800 px-3 py-1.5 text-xs font-medium text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {q}
           </button>
@@ -67,34 +69,45 @@ export default function AskGemma({ cedis, target, converted }: Props) {
         <input
           value={question}
           maxLength={200}
+          disabled={disabled}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && ask(question)}
-          placeholder="Or type your own question..."
-          className="min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-neutral-900 outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/15"
+          placeholder={disabled ? "Enter an amount first..." : "Or type your own question..."}
+          className="min-w-0 flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-neutral-900 outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/15 disabled:bg-stone-50"
         />
         <button
           type="button"
-          disabled={loading || !question.trim()}
+          disabled={loading || disabled || !question.trim()}
           onClick={() => ask(question)}
-          className="rounded-xl bg-green-800 px-5 py-2.5 font-semibold text-white transition hover:bg-green-900 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-xl bg-green-800 px-5 py-2.5 font-semibold text-white transition hover:bg-green-900 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {loading ? "Thinking..." : "Ask"}
         </button>
       </div>
 
-      {loading && (
-        <div className="mt-4 space-y-2" aria-label="Gemma is thinking">
-          <div className="h-3 w-full animate-pulse rounded bg-stone-200" />
-          <div className="h-3 w-5/6 animate-pulse rounded bg-stone-200" />
-          <div className="h-3 w-2/3 animate-pulse rounded bg-stone-200" />
-        </div>
-      )}
+      <div className="mt-4 min-h-32 flex-1 overflow-y-auto lg:max-h-64">
+        {loading && (
+          <div className="space-y-2" aria-label="Gemma is thinking">
+            <div className="h-3 w-full animate-pulse rounded bg-stone-200" />
+            <div className="h-3 w-5/6 animate-pulse rounded bg-stone-200" />
+            <div className="h-3 w-2/3 animate-pulse rounded bg-stone-200" />
+          </div>
+        )}
 
-      {answer && (
-        <div className="mt-4 whitespace-pre-wrap rounded-2xl bg-amber-50 p-4 leading-relaxed text-neutral-800 ring-1 ring-amber-200">
-          {answer}
-        </div>
-      )}
+        {!loading && answer && (
+          <div className="whitespace-pre-wrap rounded-2xl bg-amber-50 p-4 leading-relaxed text-neutral-800 ring-1 ring-amber-200">
+            {answer}
+          </div>
+        )}
+
+        {!loading && !answer && (
+          <p className="rounded-2xl border border-dashed border-stone-300 p-4 text-sm text-neutral-500">
+            {disabled
+              ? "Convert an amount on the left, then ask Gemma what it means."
+              : "Pick a question above or type your own."}
+          </p>
+        )}
+      </div>
     </section>
   );
 }

@@ -10,10 +10,10 @@ export default function Home() {
         <div className="flex-1 bg-green-700" />
       </div>
 
-      <main className="mx-auto max-w-lg px-4 py-10">
+      <main className="mx-auto max-w-5xl px-4 py-6 lg:py-8">
         <Header />
         <ConverterCard />
-        <footer className="mt-6 text-center text-xs text-neutral-500">
+        <footer className="mt-5 text-center text-xs text-neutral-500">
           Powered by Gemma 4 via the Gemini API and live exchange rates.
           AI answers are rough estimates.
         </footer>
