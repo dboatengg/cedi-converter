@@ -1,4 +1,25 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, type GenerateContentResponse } from "@google/genai";
+
+export const maxDuration = 60;
+
+const MODELS = ["gemma-4-26b-a4b-it", "gemma-4-31b-it"];
+const START_TIMEOUT_MS = 15000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("timeout")), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      }
+    );
+  });
+}
 
 export async function POST(req: Request) {
   if (!process.env.GEMINI_API_KEY) {
@@ -29,35 +50,56 @@ Reply in at most 3 short sentences. You don't have live prices, so say when you 
 
 Question: ${question}`;
 
-  try {
-    const stream = await ai.models.generateContentStream({
-      model: "gemma-4-26b-a4b-it",
-      contents: prompt,
-    });
+  let iterator: AsyncGenerator<GenerateContentResponse> | undefined;
+  let first: IteratorResult<GenerateContentResponse> | undefined;
 
-    const encoder = new TextEncoder();
-    const body = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of stream) {
-            if (chunk.text) controller.enqueue(encoder.encode(chunk.text));
-          }
-        } catch (err) {
-          console.error("Gemma stream error:", err);
-          controller.enqueue(encoder.encode("\n\n(Gemma stopped early. Try again.)"));
-        }
-        controller.close();
-      },
-    });
+  for (const model of MODELS) {
+    try {
+      const stream = await withTimeout(
+        ai.models.generateContentStream({ model, contents: prompt }),
+        START_TIMEOUT_MS
+      );
+      const it = stream[Symbol.asyncIterator]();
+      first = await withTimeout(it.next(), START_TIMEOUT_MS);
+      iterator = it;
+      break;
+    } catch (err) {
+      console.error(`Gemma error (${model}):`, err);
+    }
+  }
 
-    return new Response(body, {
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    });
-  } catch (err) {
-    console.error("Gemma error:", err);
+  if (!iterator || !first) {
     return Response.json(
-      { error: "Gemma couldn't answer right now. Try again in a moment." },
-      { status: 500 }
+      { error: "Gemma is slow or unavailable on Google's side. Try again in a minute." },
+      { status: 502 }
     );
   }
+
+  const encoder = new TextEncoder();
+  const body = new ReadableStream({
+    async start(controller) {
+      try {
+        if (!first.done && first.value?.text) {
+          controller.enqueue(encoder.encode(first.value.text));
+        }
+        if (!first.done) {
+          while (true) {
+            const result = await iterator.next();
+            if (result.done) break;
+            if (result.value.text) {
+              controller.enqueue(encoder.encode(result.value.text));
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Gemma stream error:", err);
+        controller.enqueue(encoder.encode("\n\n(Gemma stopped early. Try again.)"));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(body, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
 }
